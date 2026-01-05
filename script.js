@@ -3,11 +3,15 @@ const chart_data = {
     { label: "DM Sent", value: 3500, trend: "0.5%" },
     { label: "Viewed", value: 1200, trend: "0.2%" },
     { label: "Link Taps", value: 400, trend: "0.1%" },
+    { label: "Engaged", value: 180, trend: "0.05%" },
+    { label: "Converted", value: 65, trend: "0.02%" },
   ],
   week: [
     { label: "DM Sent", value: 25000, trend: "2.3%" },
     { label: "Viewed", value: 10000, trend: "1.2%" },
     { label: "Link Taps", value: 2000, trend: "1.2%" },
+    { label: "Engaged", value: 850, trend: "0.8%" },
+    { label: "Converted", value: 320, trend: "0.5%" },
   ],
 };
 
@@ -29,15 +33,15 @@ function renderChart(range_type) {
   const max_val = Math.max(...data.map((d) => d.value));
 
   let current_x = 0;
-  const block_w_ratio = 0.25;
-  const slope_w_ratio = 0.12;
+  const block_w_ratio = 0.16;
+  const slope_w_ratio = 0.08;
 
   data.forEach((item, i) => {
-    const h = (item.value / max_val) * (height * 0.8);
+    const h = (item.value / max_val) * (height * 0.75);
     const y = height - h;
     const w = width * block_w_ratio;
 
-    // Create Rectangle
+    // Create Rectangle with gradient
     const rect = document.createElementNS(
       "http://www.w3.org/2000/svg",
       "rect"
@@ -46,29 +50,32 @@ function renderChart(range_type) {
     rect.setAttribute("y", y);
     rect.setAttribute("width", w);
     rect.setAttribute("height", h);
-    rect.setAttribute("fill", "var(--color-main)");
+    rect.setAttribute("fill", "url(#blockGradient)");
+    rect.setAttribute("rx", "4");
     container.appendChild(rect);
 
-    // Create Label
+    // Create Label - position at the center of each block
     const label = document.createElement("div");
     label.className = "label-group";
-    label.style.left = `${(current_x / width) * 100}%`;
-    label.style.bottom = `${(h / height) * 100 + 12}%`;
+    const labelLeftPos =
+      ((current_x + w / 2) / width) * 100;
+    label.style.left = `${labelLeftPos}%`;
+    label.style.bottom = `${(h / height) * 100 + 8}%`;
     label.innerHTML = `
-            <span class="label-group__title">${
-              item.label
-            }</span>
-            <span class="label-group__value">${item.value.toLocaleString()}</span>
-            <span class="label-group__trend">↗ ${
-              item.trend
-            }</span>
-        `;
+                    <span class="label-group__title">${
+                      item.label
+                    }</span>
+                    <span class="label-group__value">${item.value.toLocaleString()}</span>
+                    <span class="label-group__trend">${
+                      item.trend
+                    }</span>
+                `;
     label_box.appendChild(label);
 
     // Show labels with a slight delay relative to the wipe animation
     setTimeout(
       () => label.classList.add("label-group--visible"),
-      i * 500 + 600
+      i * 400 + 500
     );
 
     current_x += w;
@@ -76,7 +83,7 @@ function renderChart(range_type) {
     // Create Slope
     if (i < data.length - 1) {
       const next_h =
-        (data[i + 1].value / max_val) * (height * 0.8);
+        (data[i + 1].value / max_val) * (height * 0.75);
       const slope_w = width * slope_w_ratio;
       const path = document.createElementNS(
         "http://www.w3.org/2000/svg",
@@ -97,7 +104,7 @@ function renderChart(range_type) {
   // Animate the reveal from left to right
   let progress = 0;
   const animateReveal = () => {
-    progress += 4; // Speed of the wipe
+    progress += 8;
     clip_rect.setAttribute("width", progress);
     if (progress < width) {
       requestAnimationFrame(animateReveal);
@@ -110,9 +117,13 @@ function renderChart(range_type) {
 document.querySelectorAll(".btn--toggle").forEach((btn) => {
   btn.addEventListener("click", (e) => {
     document
-      .querySelector(".btn--active")
-      .classList.remove("btn--active");
+      .querySelectorAll(".btn--toggle")
+      .forEach((b) => {
+        b.classList.remove("btn--active");
+        b.setAttribute("aria-pressed", "false");
+      });
     e.target.classList.add("btn--active");
+    e.target.setAttribute("aria-pressed", "true");
     renderChart(e.target.dataset.range);
   });
 });

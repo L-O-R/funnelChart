@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Funnel Chart</title>
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -24,13 +24,19 @@
                     <clipPath id="reveal-clip">
                         <rect id="clip-rect" x="0" y="0" width="0" height="400" />
                     </clipPath>
+                    <linearGradient id="blockGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+                    </linearGradient>
                 </defs>
                 <g id="chartContent" clip-path="url(#reveal-clip)"></g>
             </svg>
             <div class="flow-chart__labels" id="flowChartLabels"></div>
         </div>
     </section>
-    <script src="./script.js"></script>
+
+    <script src="./script.js">
+    </script>
 </body>
 
 </html>
