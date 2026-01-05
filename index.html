@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funnel Chart</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <section class="automation-activity" aria-labelledby="chart-title">
+        <header class="automation-activity__header">
+            <h2 id="chart-title" class="automation-activity__title">Automation Activity</h2>
+            <div class="automation-activity__controls" role="group" aria-label="Select time range">
+                <button class="btn btn--toggle" data-range="day" aria-pressed="false">Day</button>
+                <button class="btn btn--toggle btn--active" data-range="week" aria-pressed="true">Week</button>
+            </div>
+        </header>
+
+        <div class="flow-chart">
+            <svg class="flow-chart__svg" id="flowChartSvg" viewBox="0 0 1000 400" preserveAspectRatio="none">
+                <defs>
+                    <clipPath id="reveal-clip">
+                        <rect id="clip-rect" x="0" y="0" width="0" height="400" />
+                    </clipPath>
+                </defs>
+                <g id="chartContent" clip-path="url(#reveal-clip)"></g>
+            </svg>
+            <div class="flow-chart__labels" id="flowChartLabels"></div>
+        </div>
+    </section>
+    <script src="./script.js"></script>
+</body>
+
+</html>

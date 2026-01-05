@@ -1,0 +1,89 @@
+:root {
+    --color-main: #73f7dd;
+    --color-transition: rgba(115, 247, 221, 0.25);
+    --color-bg-button: #f3f4f6;
+    --color-active-button: #374151;
+    --transition-speed: 0.8s;
+}
+
+.automation-activity {
+    background: #ffffff;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    max-width: 900px;
+    margin: auto;
+}
+
+/* Header & Buttons */
+.automation-activity__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 60px;
+}
+
+.btn--toggle {
+    border: none;
+    padding: 8px 16px;
+    background: var(--color-bg-button);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn--toggle:first-child {
+    border-radius: 6px 0 0 6px;
+}
+
+.btn--toggle:last-child {
+    border-radius: 0 6px 6px 0;
+}
+
+.btn--active {
+    background: var(--color-active-button);
+    color: white;
+}
+
+/* Chart Area */
+.flow-chart {
+    position: relative;
+    height: 300px;
+}
+
+.flow-chart__labels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* Individual Label Styling */
+.label-group {
+    position: absolute;
+    padding-left: 12px;
+    border-left: 1px dashed #d1d5db;
+    opacity: 0;
+    /* Hidden initially for animation */
+    transition: opacity 0.5s ease;
+}
+
+.label-group--visible {
+    opacity: 1;
+}
+
+.label-group__title {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.label-group__value {
+    color: #111827;
+    font-size: 22px;
+    font-weight: 800;
+    margin: 2px 0;
+}
+
+.label-group__trend {
+    color: #9ca3af;
+    font-size: 11px;
+}
