@@ -53,7 +53,7 @@ function renderChart(range_type) {
     const label = document.createElement("div");
     label.className = "label-group";
     label.style.left = `${(current_x / width) * 100}%`;
-    label.style.bottom = `${(h / height) * 100 + 8}%`;
+    label.style.bottom = `${(h / height) * 100 + 12}%`;
     label.innerHTML = `
             <span class="label-group__title">${
               item.label
@@ -68,7 +68,7 @@ function renderChart(range_type) {
     // Show labels with a slight delay relative to the wipe animation
     setTimeout(
       () => label.classList.add("label-group--visible"),
-      i * 300 + 400
+      i * 500 + 600
     );
 
     current_x += w;
@@ -97,7 +97,7 @@ function renderChart(range_type) {
   // Animate the reveal from left to right
   let progress = 0;
   const animateReveal = () => {
-    progress += 15; // Speed of the wipe
+    progress += 4; // Speed of the wipe
     clip_rect.setAttribute("width", progress);
     if (progress < width) {
       requestAnimationFrame(animateReveal);
