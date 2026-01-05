@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluid Conversion Funnel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .funnel-card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .funnel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .funnel-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        .funnel-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .time-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f5f5f7;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #86868b;
+            border: 1px solid #e5e5e7;
+        }
+
+        .metrics-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .metric {
+            position: relative;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: #86868b;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .metric-value.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .metric-trend {
+            font-size: 13px;
+            font-weight: 600;
+            color: #34c759;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition-delay: 0.1s;
+        }
+
+        .metric-trend.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
+            margin-top: 20px;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Skeleton loading state */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        .skeleton-value {
+            width: 80px;
+            height: 36px;
+            margin-bottom: 4px;
+        }
+
+        .skeleton-trend {
+            width: 60px;
+            height: 16px;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Water flow animations */
+        @keyframes wave1 {
+
+            0%,
+            100% {
+                d: path('M0,180 Q100,175 200,180 T400,180 T600,180 T800,180 L800,200 L0,200 Z');
+            }
+
+            25% {
+                d: path('M0,180 Q100,185 200,180 T400,180 T600,180 T800,180 L800,200 L0,200 Z');
+            }
+
+            50% {
+                d: path('M0,180 Q100,175 200,180 T400,180 T600,180 T800,180 L800,200 L0,200 Z');
+            }
+
+            75% {
+                d: path('M0,180 Q100,185 200,180 T400,180 T600,180 T800,180 L800,200 L0,200 Z');
+            }
+        }
+
+        @keyframes wave2 {
+
+            0%,
+            100% {
+                d: path('M0,140 Q100,145 200,140 T400,140 T600,140 T800,140 L800,200 L0,200 Z');
+            }
+
+            33% {
+                d: path('M0,140 Q100,135 200,140 T400,140 T600,140 T800,140 L800,200 L0,200 Z');
+            }
+
+            66% {
+                d: path('M0,140 Q100,145 200,140 T400,140 T600,140 T800,140 L800,200 L0,200 Z');
+            }
+        }
+
+        @keyframes wave3 {
+
+            0%,
+            100% {
+                d: path('M0,90 Q100,85 200,90 T400,90 T600,90 T800,90 L800,200 L0,200 Z');
+            }
+
+            40% {
+                d: path('M0,90 Q100,95 200,90 T400,90 T600,90 T800,90 L800,200 L0,200 Z');
+            }
+
+            80% {
+                d: path('M0,90 Q100,85 200,90 T400,90 T600,90 T800,90 L800,200 L0,200 Z');
+            }
+        }
+
+        @keyframes fillWater {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .water-layer {
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="funnel-card">
+        <div class="funnel-header">
+            <div class="funnel-title">
+                <div class="funnel-icon">⚡</div>
+                <span>Conversion Funnel</span>
+            </div>
+            <div class="time-selector">
+                <span>📅</span>
+                <span>Last 7 days</span>
+            </div>
+        </div>
+
+        <div class="metrics-container">
+            <div class="metric">
+                <div class="metric-label">Messages</div>
+                <div class="metric-value skeleton skeleton-value" data-value="3524"></div>
+                <div class="metric-trend skeleton skeleton-trend" data-trend="23393.33%"></div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Seen</div>
+                <div class="metric-value skeleton skeleton-value" data-value="1667"></div>
+                <div class="metric-trend skeleton skeleton-trend" data-trend="33240%"></div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Pressed</div>
+                <div class="metric-value skeleton skeleton-value" data-value="930"></div>
+                <div class="metric-trend skeleton skeleton-trend" data-trend="23150%"></div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <svg class="chart-svg" viewBox="0 0 800 200" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="waterGradient1" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#5DADE2;stop-opacity:0.9" />
+                        <stop offset="100%" style="stop-color:#5DADE2;stop-opacity:0.6" />
+                    </linearGradient>
+                    <linearGradient id="waterGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#48C9B0;stop-opacity:0.85" />
+                        <stop offset="100%" style="stop-color:#48C9B0;stop-opacity:0.5" />
+                    </linearGradient>
+                    <linearGradient id="waterGradient3" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#85E3C1;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#85E3C1;stop-opacity:0.4" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Initial outline paths -->
+                <path id="outline1" d="M0,180 L800,180" stroke="#5DADE2" stroke-width="2.5" fill="none" opacity="1"
+                    stroke-dasharray="5,5">
+                    <animate attributeName="stroke-dashoffset" from="0" to="10" dur="0.5s" repeatCount="indefinite" />
+                </path>
+                <path id="outline2" d="M0,140 L800,140" stroke="#48C9B0" stroke-width="2.5" fill="none" opacity="1"
+                    stroke-dasharray="5,5">
+                    <animate attributeName="stroke-dashoffset" from="0" to="10" dur="0.6s" repeatCount="indefinite" />
+                </path>
+                <path id="outline3" d="M0,90 L800,90" stroke="#85E3C1" stroke-width="2.5" fill="none" opacity="1"
+                    stroke-dasharray="5,5">
+                    <animate attributeName="stroke-dashoffset" from="0" to="10" dur="0.7s" repeatCount="indefinite" />
+                </path>
+
+                <!-- Water fill layers (initially hidden) -->
+                <g id="waterLayers" opacity="0">
+                    <path id="water1" class="water-layer"
+                        d="M0,180 Q100,175 200,180 T400,180 T600,180 T800,180 L800,200 L0,200 Z"
+                        fill="url(#waterGradient1)" />
+
+                    <path id="water2" class="water-layer"
+                        d="M0,140 Q100,145 200,140 T400,140 T600,140 T800,140 L800,200 L0,200 Z"
+                        fill="url(#waterGradient2)" />
+
+                    <path id="water3" class="water-layer"
+                        d="M0,90 Q100,85 200,90 T400,90 T600,90 T800,90 L800,200 L0,200 Z"
+                        fill="url(#waterGradient3)" />
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        // Load metrics first
+        setTimeout(() => {
+            document.querySelectorAll('.metric-value').forEach((el, index) => {
+                const value = el.getAttribute('data-value');
+                el.classList.remove('skeleton', 'skeleton-value');
+                el.textContent = value;
+                setTimeout(() => {
+                    el.classList.add('loaded');
+                }, index * 100);
+            });
+
+            document.querySelectorAll('.metric-trend').forEach((el, index) => {
+                const trend = el.getAttribute('data-trend');
+                el.classList.remove('skeleton', 'skeleton-trend');
+                el.textContent = `${trend} ↗`;
+                setTimeout(() => {
+                    el.classList.add('loaded');
+                }, index * 100 + 200);
+            });
+        }, 1500);
+
+        // Fill water animation
+        setTimeout(() => {
+            const outlines = ['outline1', 'outline2', 'outline3'];
+            const waterLayers = document.getElementById('waterLayers');
+            const water1 = document.getElementById('water1');
+            const water2 = document.getElementById('water2');
+            const water3 = document.getElementById('water3');
+
+            // Fade out outlines
+            outlines.forEach((id, index) => {
+                setTimeout(() => {
+                    const outline = document.getElementById(id);
+                    const fadeOut = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+                    fadeOut.setAttribute('attributeName', 'opacity');
+                    fadeOut.setAttribute('from', '1');
+                    fadeOut.setAttribute('to', '0');
+                    fadeOut.setAttribute('dur', '0.8s');
+                    fadeOut.setAttribute('fill', 'freeze');
+                    outline.appendChild(fadeOut);
+                    fadeOut.beginElement();
+                }, index * 400);
+            });
+
+            // Show water layers with fill animation
+            setTimeout(() => {
+                waterLayers.style.opacity = '1';
+
+                // Animate water rising from bottom
+                [water1, water2, water3].forEach((water, index) => {
+                    water.style.transformOrigin = 'bottom';
+                    water.style.animation = `fillWater 1.2s ease-out ${index * 0.3}s forwards`;
+
+                    // Start wave animation after fill
+                    setTimeout(() => {
+                        if (water.id === 'water1') {
+                            water.style.animation = 'fillWater 1.2s ease-out forwards, wave1 4s ease-in-out infinite';
+                        } else if (water.id === 'water2') {
+                            water.style.animation = 'fillWater 1.2s ease-out forwards, wave2 3.5s ease-in-out infinite';
+                        } else if (water.id === 'water3') {
+                            water.style.animation = 'fillWater 1.2s ease-out forwards, wave3 3s ease-in-out infinite';
+                        }
+                    }, 1200 + (index * 300));
+                });
+            }, 1200);
+        }, 2500);
+    </script>
+</body>
+
+</html>
